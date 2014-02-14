@@ -1,0 +1,33 @@
+.foreground {
+z-index:2;
+}
+/* set up canvas style*/
+#canvases {
+background: #333;
+border:1px solid #ccffcc;
+margin:0px"
+}
+/* example screen width media query - redundant here
+@media screen and (min-width: 600px) and (max-width: 900px) {
+  #canvases {
+    background: #22ff55;
+  }
+}
+*/
+
+/* setting widths,heights to 100% to fill screen*/
+html,body {
+width: 100%;
+height: 100%;
+}
+#canvases  {
+width: 100%;
+height: 100%;
+}
+
+@media screen  {
+html,body, #canvases  {
+width: 100%;
+height: 100%;
+}
+}
