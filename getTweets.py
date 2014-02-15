@@ -72,7 +72,7 @@ def search_tweets (term,t_type,count) : # params: term= 'what to search for' typ
                 tweet=tweet.replace("\n","")
                 print (tweet)
                 if (c-x>1):
-                    fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" }, '
+                    fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
                 else:
                     fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
                 

@@ -26,14 +26,26 @@ function yep() {
 function loadLastTweet ()
 {
 $.getJSON( "lastTweet.json", function( data ) {
-  var items = [];
-  console.log(data.lasttweetID);
+ console.log('start lastTweet');
+  //console.log(data.lasttweetID);
   window.lasttweetID=data.lasttweetID;
+  console.log(lasttweetID);
   console.log('Success from inside getJson call to lastTweet.json');
  });
 }
 function harvestTweets ()
 {
+console.log('start harvestTweets');
+$.getJSON( "tweetstore.json", function( tweets ) {
+console.log('inside harvestTweets call to tweetstore.json');
+ var twitems = [];
+ $.each( tweets, function( username ) {
+    twitems.push( username );
+  });
+  console.log(twitems);
+  
+ });
+ 
 }
 function setUp() {
 /* optional checking for html5 file apis, needed to read data
@@ -47,6 +59,7 @@ $( document ).ready(function() {
 console.log ('Start setUp initialisation...');
 
 loadLastTweet ();
+harvestTweets ();
 
 // +++
 console.log ("Hello, Tweetenstein.js...");
@@ -83,5 +96,8 @@ window.phi=20;
 // speed of pulse
 window.phi2=4000;
 window.txty="Hello World...";
+$( document ).ready(function() {
+console.log ('document ready from intervals');
 setInterval(function(){plotPulse()},phi2); //redraws a backgound to make the text visible
 setInterval(function(){plotLoop(txty)},phi); // fires out text at rate set by period: phi
+});
