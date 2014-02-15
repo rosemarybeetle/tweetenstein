@@ -36,15 +36,22 @@ $.getJSON( "lastTweet.json", function( data ) {
 function harvestTweets ()
 {
 console.log('start harvestTweets');
-$.getJSON( "tweetstore.json", function( data ) {
-console.log(data);
+$.getJSON( "tweetstore.json", function( adata ) {
+console.log(adata.length);
+console.log(adata);
+for ( var i = 0; i < adata.length; i++ ) {
+    
+	console.log('wtf')
+    console.log(adata[i].username);
+}
 console.log('inside harvestTweets call to tweetstore.json');
- var twitems = [];
- $.each( data, function( username ) {
-    twitems.push( username );
+ /*var twitems = [];
+ $.each( data, function() {
+    console.log(data.username)
+	//twitems.push( username, tweet_id );
   });
-  console.log(twitems);
-  
+  console.log('twitems'+twitems);
+  */
  });
  
 }
