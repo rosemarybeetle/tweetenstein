@@ -27,14 +27,14 @@ function loadLastTweet ()
 {
 $.getJSON( "lastTweet.json", function( data ) {
   var items = [];
-  $.each( data, function( lasttweetID ) {
-    items.push( lasttweetID);
-  });
-  console.log('hhh');
+  console.log(data.lasttweetID);
+  window.lasttweetID=data.lasttweetID;
+  console.log('Success from inside getJson call to lastTweet.json');
  });
-
 }
-
+function harvestTweets ()
+{
+}
 function setUp() {
 /* optional checking for html5 file apis, needed to read data
 if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -44,18 +44,9 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 }*/
 // +++
 $( document ).ready(function() {
-console.log ('ready');
-$.getJSON('lastTweet.json', function(response){
-       JSON = response;
-       console.log(JSON.property);
- })
-$.getJSON( "lastTweet.json", function( data ) {
-  var items = [];
-  console.log(data);
-  console.log('xxx');
- });
- console.log('!!!');
-});
+console.log ('Start setUp initialisation...');
+
+loadLastTweet ();
 
 // +++
 console.log ("Hello, Tweetenstein.js...");
@@ -67,19 +58,19 @@ var ctxt=document.getElementById("myCanvas");
 window.txt=ctxt.getContext("2d");
 window.fontDef="20px Arial";
 txt.font=fontDef;
-
+console.log('setUp complete!!!');
+});
 }
 // -------------------------------end setup ---------------------
-function harvestText ()
-{
-}
+
 
 function plotLoop(txty){
 screenSize();
 window.xx=Math.random(1)*W-35;//initialise random x position variable;
 window.yy=Math.random(1)*H;//initialise random y position variable;
 txt.fillStyle="#86DDDE";
-txt.fillText(txty,xx,yy);
+//txt.fillText(txty,xx,yy);
+txt.fillText(lasttweetID,xx,yy);
 }
 function plotPulse() {
 myCanvas.width=W;
