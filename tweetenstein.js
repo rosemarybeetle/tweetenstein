@@ -40,12 +40,19 @@ $.getJSON( "tweetstore.json", function( adata ) {
 console.log(adata.length);
 console.log(adata);
 for ( var i = 0; i < adata.length; i++ ) {
-    
+    var twitems = [];
+	$.each( adata, function() {
+	twitems.push(adata[i].username);
+    console.log(adata[i].username)
+	
+  });
+  
+  //console.log('twitems'+twitems);
 	console.log('wtf')
     console.log(adata[i].username);
 }
 console.log('inside harvestTweets call to tweetstore.json');
- /*var twitems = [];
+ /*
  $.each( data, function() {
     console.log(data.username)
 	//twitems.push( username, tweet_id );
