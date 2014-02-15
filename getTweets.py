@@ -8,9 +8,32 @@ from requests_oauthlib import OAuth1Session
 from threading import Timer
 import PMRkeys #PMRkeys is a separate local .py file with the Twitter Application Oauth credentials listed (not here for obvious reasons!) 
 import json # will be needed to handle json
+import sqlite3 as lite # sqlite database
+import sys
 
+# -------------------   set up database    ------------------
+con = lite.connect('tweetList.db')
 
-# ---------- define variables
+with con: # has built in open and close db reources functionality apparently
+    cur = con.cursor()    
+    cur.execute('SELECT SQLITE_VERSION()')
+    data = cur.fetchone()
+    print ("SQLite version: %s"+ str(data)  )
+    cur.execute("CREATE TABLE IF NOT EXISTS tweets(tid TEXT, UserName TEXT, ScreenName TEXT, Status TEXT)") # create A TABLE FOR THE FIRST TIME ONLY
+    cur.execute("INSERT INTO tweets VALUES('1','TESTun','TESTnm','TESTst')")
+    cur.execute("INSERT INTO tweets VALUES('2','2TESTun','TESTnm','TESTst')")
+    cur.execute("SELECT * FROM tweets ")
+        
+
+def storeTweet (tid,un,nm,st) : #  this puts a record into the tweets database
+    params=(tid,un,nm,st)
+    conA = lite.connect('tweetList.db')
+    with conA:
+        cur = conA.cursor()
+        cur.execute("INSERT INTO tweets VALUES(?,?,?,?)",params)
+# --------------------  end db setup ------------------------
+    
+# ---------- define variables -------------------------------
 adminURL='https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdGp1NmxJVXVHcGhIel9CNUxJUk8yYXc&output=csv'
 stopwordsURL ='https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdEJGSWJNRXJJQVc5ZVo2cHNGRFJ3WVE&output=csv'
 searchTerm=""
@@ -23,8 +46,10 @@ text2=""
 saveTweet=saveTweets.saveTweet
 saveTweetCSV=saveTweetsCSV.saveTweet
 saveTweetId=saveLastTweetId.saveTweetId
+#  --------------------------------------------------------------------------------------
+#       ----------- end - above this line are set ups and imports etc ------------
+#  --------------------------------------------------------------------------------------
 
-#  ----------- end -------------
 
 # ------------- search twitter as a function ---------------
 def search_tweets (term,t_type,count) : # params: term= 'what to search for' type = 'how to search' Count = 'number of tweets' (max 100)    search_url_root='https://api.twitter.com/1.1/search/tweets.json?q='
@@ -77,6 +102,7 @@ def search_tweets (term,t_type,count) : # params: term= 'what to search for' typ
                     fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
                 
                 saveTweet(fullTweet)
+                storeTweet(tweet_id,username,name,tweet)
                 fullTweetCSV=str(tweet_id)+','+str(username)+','+str(name)+','+str(tweet)
                 saveTweetCSV(fullTweetCSV)  
             except UnicodeEncodeError:
