@@ -36,10 +36,11 @@ $.getJSON( "lastTweet.json", function( data ) {
 function harvestTweets ()
 {
 console.log('start harvestTweets');
-$.getJSON( "tweetstore.json", function( tweets ) {
+$.getJSON( "tweetstore.json", function( data ) {
+console.log(data);
 console.log('inside harvestTweets call to tweetstore.json');
  var twitems = [];
- $.each( tweets, function( username ) {
+ $.each( data, function( username ) {
     twitems.push( username );
   });
   console.log(twitems);
@@ -59,6 +60,7 @@ $( document ).ready(function() {
 console.log ('Start setUp initialisation...');
 
 loadLastTweet ();
+
 harvestTweets ();
 
 // +++
