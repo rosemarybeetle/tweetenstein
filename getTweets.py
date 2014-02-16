@@ -19,10 +19,10 @@ with con: # has built in open and close db reources functionality apparently
     cur.execute('SELECT SQLITE_VERSION()')
     data = cur.fetchone()
     print ("SQLite version: %s"+ str(data)  )
-    cur.execute("CREATE TABLE IF NOT EXISTS tweets(tid TEXT, UserName TEXT, ScreenName TEXT, Status TEXT)") # create A TABLE FOR THE FIRST TIME ONLY
-    cur.execute("INSERT INTO tweets VALUES('1','TESTun','TESTnm','TESTst')")
-    cur.execute("INSERT INTO tweets VALUES('2','2TESTun','TESTnm','TESTst')")
-    cur.execute("SELECT * FROM tweets ")
+    cur.execute("CREATE TABLE IF NOT EXISTS tweets(tid INT, UserName TEXT, ScreenName TEXT, Status TEXT)") # create A TABLE FOR THE FIRST TIME ONLY
+    cur.execute('SELECT count(*) FROM tweets')
+    data2 = cur.fetchone()
+    print ('count  '+str(data2))
         
 
 def storeTweet (tid,un,nm,st) : #  this puts a record into the tweets database
@@ -31,6 +31,25 @@ def storeTweet (tid,un,nm,st) : #  this puts a record into the tweets database
     with conA:
         cur = conA.cursor()
         cur.execute("INSERT INTO tweets VALUES(?,?,?,?)",params)
+        
+
+def lastTweet (): # get last row of database
+    conA = lite.connect('tweetList.db')
+    with conA:
+        cur = conA.cursor()
+        cur.execute('SELECT count(*) FROM tweets')
+        data2 = cur.fetchone()
+        county=data2[0]
+        print ('count  '+str(county))
+        cur.execute('SELECT max(tid) FROM tweets ') # shows highest value of a tweet_id in any record (i.e. the last one sent)
+        data3 = cur.fetchone()
+        global lastSavedTweetId
+        lastSavedTweetId=data3[0]
+        lastSavedTweetId=int(lastSavedTweetId)
+        print('---------------')
+        print ('ID of last tweet saved = '+str(lastSavedTweetId))
+        print('---------------')
+        
 # --------------------  end db setup ------------------------
     
 # ---------- define variables -------------------------------
@@ -42,6 +61,7 @@ tweetNum=""
 harvestPeriod=""
 introText=""
 text2=""
+lastSavedTweetId=0
 
 saveTweet=saveTweets.saveTweet
 saveTweetCSV=saveTweetsCSV.saveTweet
@@ -80,37 +100,48 @@ def search_tweets (term,t_type,count) : # params: term= 'what to search for' typ
         js = json.loads(j)
         c = int(count)
         x=0
-        lastTweetId=""
+        # lastTweetId=""
+        lastTweet() 
         while (x<c):
             try:
-                print ('---------------')
-                tweet_id = js['statuses'][x]['id']
-                if (x==0):
-                    saveTweetId (str(tweet_id))
-                print ('Tweet '+str(x+1)+' of '+str(c)+'. Tweet id: '+str(tweet_id))
-                name = js['statuses'][x]['user']['name']
-                user = js['statuses'][x]['user']['screen_name']
-                username= '@'+user
-                print ('From:'+username+'('+name+')')
-                tweet = js['statuses'][x]['text']
-                # following line gets rid of Twitter line breaks...
-                tweet=tweet.replace("\n","")
-                print (tweet)
-                if (c-x>1):
-                    fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
-                else:
-                    fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
                 
-                saveTweet(fullTweet)
-                storeTweet(tweet_id,username,name,tweet)
-                fullTweetCSV=str(tweet_id)+','+str(username)+','+str(name)+','+str(tweet)
-                saveTweetCSV(fullTweetCSV)  
+                tweet_id = js['statuses'][x]['id']
+                testID=int(tweet_id)
+                print ('testID= '+str(testID))
+                print ('lastSavedTweetId= '+str(lastSavedTweetId))
+                print('-------')
+                if testID>lastSavedTweetId and testID>0:
+                    print('testID-lastSavedTweetId = '+str(testID-lastSavedTweetId))
+                    print ('---------------')
+                    if (x==0):
+                        saveTweetId (str(tweet_id))
+                    print ('Tweet '+str(x+1)+' of '+str(c)+'. Tweet id: '+str(tweet_id))
+                    name = js['statuses'][x]['user']['name']
+                    user = js['statuses'][x]['user']['screen_name']
+                    username= '@'+user
+                    print ('From:'+username+'('+name+')')
+                    tweet = js['statuses'][x]['text']
+                    # following line gets rid of Twitter line breaks...
+                    tweet=tweet.replace("\n","")
+                    print (tweet)
+                    if (c-x>1):
+                        fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
+                    else:
+                        fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
+                
+                    saveTweet(fullTweet)
+                    tid=int(tweet_id)
+                    storeTweet(tid,username,name,tweet)
+                    fullTweetCSV=str(tweet_id)+','+str(username)+','+str(name)+','+str(tweet)
+                    saveTweetCSV(fullTweetCSV)
+                else:
+                    print('testID-lastSavedTweetId = '+str(testID-lastSavedTweetId))
             except UnicodeEncodeError:
                 print ('Tweet text not available - dodgy term in tweet broke the API')
                 print ('---------------')
             x=x+1
             #lastTweetId=str(tweet_id)
-            
+           
     except KeyError:
         print ('twitter search terms broke the API')
         print ('---------------')
