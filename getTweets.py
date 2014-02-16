@@ -45,6 +45,8 @@ def lastTweet (): # get last row of database
         data3 = cur.fetchone()
         global lastSavedTweetId
         lastSavedTweetId=data3[0]
+        if lastSavedTweetId!=int:
+            lastSavedTweetId=0
         lastSavedTweetId=int(lastSavedTweetId)
         print('---------------')
         print ('ID of last tweet saved = '+str(lastSavedTweetId))
@@ -66,6 +68,7 @@ lastSavedTweetId=0
 saveTweet=saveTweets.saveTweet
 saveTweetCSV=saveTweetsCSV.saveTweet
 saveTweetId=saveLastTweetId.saveTweetId
+
 #  --------------------------------------------------------------------------------------
 #       ----------- end - above this line are set ups and imports etc ------------
 #  --------------------------------------------------------------------------------------
@@ -238,5 +241,4 @@ print (text2)
 
 
 print ('---- stopwords ------------')
-
 
