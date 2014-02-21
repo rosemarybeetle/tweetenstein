@@ -12,30 +12,38 @@ import sqlite3 as lite # sqlite database
 import sys
 
 # -------------------   set up database    ------------------
-def createDB ():
-    con = lite.connect('tweetList.db')
-
+def createDB (trm):
+    dbName=str(trm)+'List.db'
+    try:
+        con = lite.connect(dbName)
+    except:
+        print ('problem connecting in createDB() ')
     with con: # has built in open and close db reources functionality apparently
         cur = con.cursor()    
         cur.execute('SELECT SQLITE_VERSION()')
         data = cur.fetchone()
         print ("SQLite version: %s"+ str(data)  )
-        cur.execute("CREATE TABLE IF NOT EXISTS tweets(tid INT, UserName TEXT, ScreenName TEXT, Status TEXT)") # create A TABLE FOR THE FIRST TIME ONLY
-        cur.execute('SELECT count(*) FROM tweets')
-        data2 = cur.fetchone()
-        print ('count  '+str(data2))
+        try :
+            cur.execute("CREATE TABLE IF NOT EXISTS tweets(tid INT, UserName TEXT, ScreenName TEXT, Status TEXT)") # create A TABLE FOR THE FIRST TIME ONLY
+            cur.execute('SELECT count(*) FROM tweets')
+            data2 = cur.fetchone()
+            print ('count  '+str(data2))
+        except:
+            print ('could not create table')
         
 
 def storeTweet (tid,un,nm,st) : #  this puts a record into the tweets database
     params=(tid,un,nm,st)
-    conA = lite.connect('tweetList.db')
+    dbName=str(termTXT)+'List.db'
+    conA = lite.connect(dbName)
     with conA:
         cur = conA.cursor()
         cur.execute("INSERT INTO tweets VALUES(?,?,?,?)",params)
         
 
 def lastTweet (): # get last row of database
-    conA = lite.connect('tweetList.db')
+    dbName=str(termTXT)+'List.db'
+    conA = lite.connect(dbName)
     with conA:
         cur = conA.cursor()
         cur.execute('SELECT count(*) FROM tweets')
@@ -81,17 +89,21 @@ def search_tweets (term,t_type,count) : # params: term= 'what to search for' typ
     search_url_root='https://api.twitter.com/1.1/search/tweets.json?q='
     x= term.find('#')
     y=term.find('@')
+    global termTXT
     if x==0 : #  this is checking if the first character is a hashtag
         print ('searching twitter API for hashtag: '+term)
         term2 = term.split('#')[1] # strip off the hash
+        termTXT= term2 # allows the search term to be passed as a parameter
         term='%23'+term2 # add unicode for # sign (%23) if a hashtag search term
     else:
         if y==0:
             print ('searching twitter API for username: @'+term)
             term3 = term.split('@')[1] # strip off the @
+            termTXT= term3 # allows the search term to be passed as a parameter
             term='%40'+term3 # add unicode for @ sign (%40) if a username search
         else:
             print ('searching for term: '+term) # or just search!
+            termTXT= term # allows the search term to be passed as a parameter
     search_url=str(search_url_root+term+'&count='+count)
     print ('---------------------------')
     print ()
@@ -105,7 +117,10 @@ def search_tweets (term,t_type,count) : # params: term= 'what to search for' typ
         c = int(count)
         x=0
         # lastTweetId=""
-        lastTweet() 
+        try:
+            lastTweet()
+        except:
+            createDB(termTXT)
         while (x<c):
             try:
                 
@@ -135,7 +150,7 @@ def search_tweets (term,t_type,count) : # params: term= 'what to search for' typ
                 
                     saveTweet(fullTweet)
                     tid=int(tweet_id)
-                    storeTweet(tid,username,name,tweet) # this is to the SQLITE db
+                    storeTweet(tid,username,name,tweet)
                     fullTweetCSV=str(tweet_id)+','+str(username)+','+str(name)+','+str(tweet)
                     saveTweetCSV(fullTweetCSV)
                 else:
@@ -216,19 +231,20 @@ def retrieveArray (url):
     # end retrieveArray
     
 # ------------- end retrieve data ---------------------------
-# ------------- end admin ad functions etc ------------------
 
-# -----------------------------------------------------------
-# ------------- the business starts here---------------------
-# -----------------------------------------------------------
-loadAdmin (adminURL) # got to Google Drive and get admin settings (search term etc.)
-retrieveArray(stopwordsURL) # got to Google Drive and get list of stopwords
-createDB () # create a sqlite data base (name depends upon searc term. This way it creates separate databases per search
-def keeplooping(): # this sets up the loop
+loadAdmin (adminURL)
+retrieveArray(stopwordsURL)
+search_tweets(searchTerm,searchType,tweetNum)
+try:
+    createDB (termTXT)
+except:
+    print('first createDB failed')
+def keeplooping():
+    createDB (termTXT)
     search_tweets(searchTerm,searchType,tweetNum)
     Timer(30, keeplooping).start()
 
-keeplooping() # initialises the loop
+keeplooping()
 
 #search_tweets(searchTerm,searchType,tweetNum)
 print ('-------99999999  end   9999-------')

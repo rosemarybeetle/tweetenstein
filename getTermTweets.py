@@ -11,9 +11,40 @@ import json # will be needed to handle json
 import sqlite3 as lite # sqlite database
 import sys
 
+# ---------- define variables -------------------------------
+adminURL='https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdGp1NmxJVXVHcGhIel9CNUxJUk8yYXc&output=csv'
+stopwordsURL ='https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdEJGSWJNRXJJQVc5ZVo2cHNGRFJ3WVE&output=csv'
+searchTerm=""
+searchType=""
+tweetNum=""
+harvestPeriod=""
+introText=""
+text2=""
+lastSavedTweetId=0
+
+saveTweet=saveTweets.saveTweet
+saveTweetCSV=saveTweetsCSV.saveTweet
+saveTweetId=saveLastTweetId.saveTweetId
+
+
 # -------------------   set up database    ------------------
+
 def createDB ():
     con = lite.connect('tweetList.db')
+
+    with con: # has built in open and close db reources functionality apparently
+        cur = con.cursor()    
+        cur.execute('SELECT SQLITE_VERSION()')
+        data = cur.fetchone()
+        print ("SQLite version: %s"+ str(data)  )
+        cur.execute("CREATE TABLE IF NOT EXISTS tweets(tid INT, UserName TEXT, ScreenName TEXT, Status TEXT)") # create A TABLE FOR THE FIRST TIME ONLY
+        cur.execute('SELECT count(*) FROM tweets')
+        data2 = cur.fetchone()
+        print ('count  '+str(data2))
+
+def createTermDB (term):
+    dbName=str(term)+'List.db'
+    con = lite.connect(dbName)
 
     with con: # has built in open and close db reources functionality apparently
         cur = con.cursor()    
@@ -35,40 +66,59 @@ def storeTweet (tid,un,nm,st) : #  this puts a record into the tweets database
         
 
 def lastTweet (): # get last row of database
+    global lastSavedTweetId
     conA = lite.connect('tweetList.db')
     with conA:
         cur = conA.cursor()
-        cur.execute('SELECT count(*) FROM tweets')
-        data2 = cur.fetchone()
-        county=data2[0]
-        print ('count  '+str(county))
-        cur.execute('SELECT max(tid) FROM tweets ') # shows highest value of a tweet_id in any record (i.e. the last one sent)
-        data3 = cur.fetchone()
-        global lastSavedTweetId
-        lastSavedTweetId=data3[0]
-        if lastSavedTweetId!=int:
-            lastSavedTweetId=0
-        lastSavedTweetId=int(lastSavedTweetId)
-        print('---------------')
-        print ('ID of last tweet saved = '+str(lastSavedTweetId))
-        print('---------------')
+        try:
+            cur.execute('SELECT count(*) FROM tweets')
+            data2 = cur.fetchone()
+            county=data2[0]
+            print ('count  '+str(county))
+            cur.execute('SELECT max(tid) FROM tweets ') # shows highest value of a tweet_id in any record (i.e. the last one sent)
+            data3 = cur.fetchone()
+            lastSavedTweetId=data3[0]
+            lastSavedTweetId=int(lastSavedTweetId)
+            print('---------------')
+            print ('ID of last tweet saved = '+str(lastSavedTweetId))
+            print('---------------')
+        except:
+            print('tweetList database is empty')
+            lastSavedTweet=0
+
+def storeTermTweet (tid,un,nm,st) : #  this puts a record into the tweets database
+    params=(tid,un,nm,st)
+    dbName=str(termTXT)+'List.db'
+    conA = lite.connect(dbName)
+    with conA:
+        cur = conA.cursor()
+        cur.execute("INSERT INTO tweets VALUES(?,?,?,?)",params)
+        
+
+def lastTermTweet (): # get last row of database
+    dbName=str(termTXT)+'List.db'
+    conA = lite.connect(dbName)
+    global lastSavedTweetId
+    try:
+        with conA:
+            cur = conA.cursor()
+            cur.execute('SELECT count(*) FROM tweets')
+            data2 = cur.fetchone()
+            county=data2[0]
+            print ('count  '+str(county))
+            cur.execute('SELECT max(tid) FROM tweets ') # shows highest value of a tweet_id in any record (i.e. the last one sent)
+            data3 = cur.fetchone()
+            lastSavedTweetId=data3[0]
+            lastSavedTweetId=int(lastSavedTweetId)
+            print('---------------')
+            print ('ID of last tweet saved = '+str(lastSavedTweetId))
+            print('---------------')
+    except:
+        print(termTXT+' database is empty')
+        lastSavedTweet=0
+        
         
 # --------------------  end db setup ------------------------
-    
-# ---------- define variables -------------------------------
-adminURL='https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdGp1NmxJVXVHcGhIel9CNUxJUk8yYXc&output=csv'
-stopwordsURL ='https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdEJGSWJNRXJJQVc5ZVo2cHNGRFJ3WVE&output=csv'
-searchTerm=""
-searchType=""
-tweetNum=""
-harvestPeriod=""
-introText=""
-text2=""
-lastSavedTweetId=0
-
-saveTweet=saveTweets.saveTweet
-saveTweetCSV=saveTweetsCSV.saveTweet
-saveTweetId=saveLastTweetId.saveTweetId
 
 #  --------------------------------------------------------------------------------------
 #       ----------- end - above this line are set ups and imports etc ------------
@@ -78,20 +128,32 @@ saveTweetId=saveLastTweetId.saveTweetId
 # ------------- search twitter as a function ---------------
 def search_tweets (term,t_type,count) : # params: term= 'what to search for' type = 'how to search' Count = 'number of tweets' (max 100)    search_url_root='https://api.twitter.com/1.1/search/tweets.json?q='
     # check what type the search term is
+    
     search_url_root='https://api.twitter.com/1.1/search/tweets.json?q='
     x= term.find('#')
     y=term.find('@')
+    global termTXT
+    global rawTerm
     if x==0 : #  this is checking if the first character is a hashtag
         print ('searching twitter API for hashtag: '+term)
         term2 = term.split('#')[1] # strip off the hash
+        termTXT= term2 # allows the search term to be passed as a parameter
+        rawTerm=termTXT
         term='%23'+term2 # add unicode for # sign (%23) if a hashtag search term
+        
     else:
         if y==0:
             print ('searching twitter API for username: @'+term)
             term3 = term.split('@')[1] # strip off the @
+            termTXT= term3 # allows the search term to be passed as a parameter
+            rawTerm=termTXT
             term='%40'+term3 # add unicode for @ sign (%40) if a username search
         else:
             print ('searching for term: '+term) # or just search!
+            termTXT= term # allows the search term to be passed as a parameter
+            rawTerm=termTXT
+    
+    
     search_url=str(search_url_root+term+'&count='+count)
     print ('---------------------------')
     print ()
@@ -135,7 +197,8 @@ def search_tweets (term,t_type,count) : # params: term= 'what to search for' typ
                 
                     saveTweet(fullTweet)
                     tid=int(tweet_id)
-                    storeTweet(tid,username,name,tweet) # this is to the SQLITE db
+                    storeTweet(tid,username,name,tweet)
+                    #storeTermTweet(tid,username,name,tweet)
                     fullTweetCSV=str(tweet_id)+','+str(username)+','+str(name)+','+str(tweet)
                     saveTweetCSV(fullTweetCSV)
                 else:
@@ -216,19 +279,18 @@ def retrieveArray (url):
     # end retrieveArray
     
 # ------------- end retrieve data ---------------------------
-# ------------- end admin ad functions etc ------------------
 
-# -----------------------------------------------------------
-# ------------- the business starts here---------------------
-# -----------------------------------------------------------
-loadAdmin (adminURL) # got to Google Drive and get admin settings (search term etc.)
-retrieveArray(stopwordsURL) # got to Google Drive and get list of stopwords
-createDB () # create a sqlite data base (name depends upon searc term. This way it creates separate databases per search
-def keeplooping(): # this sets up the loop
+loadAdmin (adminURL) # go to Google drive and load admin setting (search terms etc)
+retrieveArray(stopwordsURL) # go to Google drive and load stopword
+search_tweets(searchTerm,searchType,tweetNum) #
+createDB() 
+createTermDB(termTXT) # Creates bespoke databases (depends on search term)
+def keeplooping(): # defines loop
+    #createTermDB(termTXT)
     search_tweets(searchTerm,searchType,tweetNum)
     Timer(30, keeplooping).start()
 
-keeplooping() # initialises the loop
+keeplooping() # initiates loop
 
 #search_tweets(searchTerm,searchType,tweetNum)
 print ('-------99999999  end   9999-------')
@@ -247,4 +309,5 @@ print (text2)
 
 
 print ('---- stopwords ------------')
+
 
