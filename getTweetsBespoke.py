@@ -13,7 +13,7 @@ import sqlite3 as lite # sqlite database
 import sys
 
 # -------------------   set up database    ------------------
-def createDB (trm):
+'''def createDB (trm):
     dbName=str(trm)+'List.db'
     try:
         con = lite.connect(dbName)
@@ -68,7 +68,7 @@ def lastTweet (): # get last row of database
       
         
 # --------------------  end db setup ------------------------
-    
+'''    
 # ---------- define variables -------------------------------
 adminURL='https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdGp1NmxJVXVHcGhIel9CNUxJUk8yYXc&output=csv'
 stopwordsURL ='https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdEJGSWJNRXJJQVc5ZVo2cHNGRFJ3WVE&output=csv'
@@ -170,6 +170,7 @@ def search_tweets (term,count) : # params: term= 'what to search for' type = 'ho
                 tid=int(tweet_id)
                 fullTweetCSV=str(tweet_id)+','+str(username)+','+str(name)+','+str(tweet)
                 saveTweetCSV(fullTweetCSV)
+                #storeTweet (tweet_id,username,name,tweet)
                 
             except UnicodeEncodeError:
                 print ('Tweet text not available - dodgy term in tweet broke the API')
@@ -260,12 +261,9 @@ retrieveArray(stopwordsURL) #load stopwords from stopwords google sheet
 
 search_tweets(searchTerm,tweetNum) # execute the twitter API search using the admin settings loaded
 
-try:
-    createDB (termTXT) # creates or loads a new database which is unique for any search term
-except:
-    print('first createDB failed')  # exception message
+
 def keeplooping():  # define the loop and what it executes (rate is set by loaded setting: 'harvestPeriod' 
-    createDB (termTXT)
+   
     search_tweets(searchTerm,tweetNum)
     Timer(int(harvestPeriod), keeplooping).start()
 
