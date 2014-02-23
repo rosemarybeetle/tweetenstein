@@ -66,7 +66,7 @@ def search_tweets (term,count) : # params: term= 'what to search for' type = 'ho
     # check what type the search term is
     clearJSON() # empties the temporary tweet store (line break version)
     clearJSON2() # empties the temporary tweet store (JSON version)
-    saveTweet2('[')
+    saveTweet2('{"store":[')
     search_url_root='https://api.twitter.com/1.1/search/tweets.json?q='
     x= term.find('#') # look to see what position the hashtag is
     y=term.find('@') # look to see what position the @ sign is
@@ -121,7 +121,7 @@ def search_tweets (term,count) : # params: term= 'what to search for' type = 'ho
                 fullTweet2='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } ,'
                 print ('WTF = x = '+str(x))
                 if (x==c-2):
-                    fullTweet2='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } ]'
+                    fullTweet2='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } ]}'
                 saveTweet(fullTweet)
                 saveTweet2(fullTweet2)
                 tid=int(tweet_id)
