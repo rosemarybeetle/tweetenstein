@@ -1,6 +1,8 @@
 import requests
 import saveTweets
+import saveTweets2
 import clearJSONStore
+import clearJSONStore2
 import saveLastTweetId
 import saveTweetsCSV
 import requests_oauthlib
@@ -12,63 +14,8 @@ import json # will be needed to handle json
 import sqlite3 as lite # sqlite database
 import sys
 
-# -------------------   set up database    ------------------
-'''def createDB (trm):
-    dbName=str(trm)+'List.db'
-    try:
-        con = lite.connect(dbName)
-    except:
-        print ('problem connecting in createDB() ')
-    with con: # has built in open and close db reources functionality apparently
-        cur = con.cursor()    
-        cur.execute('SELECT SQLITE_VERSION()')
-        data = cur.fetchone()
-        print ("SQLite version: %s"+ str(data)  )
-        try :
-            cur.execute("CREATE TABLE IF NOT EXISTS tweets(tid INT, UserName TEXT, ScreenName TEXT, Status TEXT)") # create A TABLE FOR THE FIRST TIME ONLY
-            cur.execute('SELECT count(*) FROM tweets')
-            data2 = cur.fetchone()
-            print ('count  '+str(data2))
-        except:
-            print ('could not create table')
-        
 
-def storeTweet (tid,un,nm,st) : #  this puts a record into the tweets database
-    params=(tid,un,nm,st)
-    dbName=str(termTXT)+'List.db'
-    conA = lite.connect(dbName)
-    with conA:
-        cur = conA.cursor()
-        cur.execute("INSERT INTO tweets VALUES(?,?,?,?)",params)
-        
-
-def lastTweet (): # get last row of database
-    print('----------- xxxxxxxxxxxxxxxxxxxxxxxxx----')
-    dbName=str(termTXT)+'List.db'
-    conA = lite.connect(dbName)
-    with conA:
-        cur = conA.cursor()
-        cur.execute('SELECT count(*) FROM tweets')
-        data2 = cur.fetchone()
-        county=data2[0]
-        print ('county from inside lastTweet ='+str(county))
-        #cur.execute('SELECT max(tid) FROM tweets ') # shows highest value of a tweet_id in any record (i.e. the last one sent)
-        #cur.execute('SELECT * FROM tweets WHERE tid = (SELECT MAX(tid) FROM tweets) ') # shows highest value of a tweet_id in any record (i.e. the last one sent)
-        cur.execute('SELECT tid FROM tweets ORDER BY tid DESC ') # return last (maxRet) records
-        data3 = cur.fetchall()
-        global lastSavedTweetIdDB
-        trinkle=data3[0]
-        #lastSavedTweetIdDB=int(lastSavedTweetIdDB)
-        print ('ID of last tweet saved in database = ')
-        print (trinkle[0])
-        print('---------------')
-        lastSavedTweetIdDB=int(trinkle[0])
-           # lastSavedTweetIdDB=0
-        print('----------- xxxxxxxxxxxxxxxxxxxxxxxxx----')
-      
-        
-# --------------------  end db setup ------------------------
-'''    
+  
 # ---------- define variables -------------------------------
 adminURL='https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdGp1NmxJVXVHcGhIel9CNUxJUk8yYXc&output=csv'
 stopwordsURL ='https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdEJGSWJNRXJJQVc5ZVo2cHNGRFJ3WVE&output=csv'
@@ -81,7 +28,9 @@ text2=""
 lastSavedTweetIdDB=0
 
 saveTweet=saveTweets.saveTweet
+saveTweet2=saveTweets2.saveTweet
 clearJSON=clearJSONStore.clearJSON
+clearJSON2=clearJSONStore2.clearJSON
 saveTweetCSV=saveTweetsCSV.saveTweet
 saveTweetId=saveLastTweetId.saveTweetId
 
@@ -101,6 +50,9 @@ def retrieveTweetIdJS ():
     print ('-------------')
     print ('-------------')
     contents.close()
+#def jasoniseTweets ():
+    
+    # turns a line separatedlist of JSON into a full on JSON object
 
 
 #  --------------------------------------------------------------------------------------
@@ -112,7 +64,9 @@ def retrieveTweetIdJS ():
 def search_tweets (term,count) : # params: term= 'what to search for' type = 'how to search' Count = 'number of tweets' (max 100)    search_url_root='https://api.twitter.com/1.1/search/tweets.json?q='
     retrieveTweetIdJS()
     # check what type the search term is
-    clearJSON() # empties the temporary tweet store
+    clearJSON() # empties the temporary tweet store (line break version)
+    clearJSON2() # empties the temporary tweet store (JSON version)
+    saveTweet2('[')
     search_url_root='https://api.twitter.com/1.1/search/tweets.json?q='
     x= term.find('#') # look to see what position the hashtag is
     y=term.find('@') # look to see what position the @ sign is
@@ -160,23 +114,23 @@ def search_tweets (term,count) : # params: term= 'what to search for' type = 'ho
                 tweet = js['statuses'][x]['text']
                 # following line gets rid of Twitter line breaks...
                 tweet=tweet.replace("\n","")
+                tweet=tweet.replace("\"","'")
+                
                 print (tweet)
-                if (c-x>1):
-                    fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
-                else:
-                    fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
-            
+                fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
+                fullTweet2='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } ,'
+                print ('WTF = x = '+str(x))
+                if (x==c-2):
+                    fullTweet2='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } ]'
                 saveTweet(fullTweet)
+                saveTweet2(fullTweet2)
                 tid=int(tweet_id)
                 fullTweetCSV=str(tweet_id)+','+str(username)+','+str(name)+','+str(tweet)
-                saveTweetCSV(fullTweetCSV)
-                #storeTweet (tweet_id,username,name,tweet)
-                
+                saveTweetCSV(fullTweetCSV)                
             except UnicodeEncodeError:
                 print ('Tweet text not available - dodgy term in tweet broke the API')
                 print ('---------------')
             x=x+1
-           
     except KeyError:
         print ('twitter search terms broke the API')
         print ('---------------')
