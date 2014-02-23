@@ -130,8 +130,8 @@ def search_tweets (term,t_type,count) : # params: term= 'what to search for' typ
     # check what type the search term is
     
     search_url_root='https://api.twitter.com/1.1/search/tweets.json?q='
-    x= term.find('#')
-    y=term.find('@')
+    x= term.find('#') # find first location of #
+    y=term.find('@') # find first location of @
     global termTXT
     global rawTerm
     if x==0 : #  this is checking if the first character is a hashtag
@@ -219,7 +219,7 @@ def search_tweets (term,t_type,count) : # params: term= 'what to search for' typ
 
 # ------------- get admin settings--------------------------
 def loadAdmin (url):
-    retrieveArray(adminURL)
+    retrieveArray(adminURL) # calls the function below
     
     st=results[0] # get search term
     aa=st.split(',')
@@ -279,10 +279,15 @@ def retrieveArray (url):
     # end retrieveArray
     
 # ------------- end retrieve data ---------------------------
+# ------------- end admin ad functions etc ------------------
 
+
+# -----------------------------------------------------------
+# ------------- the business starts here---------------------
+# -----------------------------------------------------------
 loadAdmin (adminURL) # go to Google drive and load admin setting (search terms etc)
 retrieveArray(stopwordsURL) # go to Google drive and load stopword
-search_tweets(searchTerm,searchType,tweetNum) #
+search_tweets(searchTerm,searchType,tweetNum) # 
 createDB() 
 createTermDB(termTXT) # Creates bespoke databases (depends on search term)
 def keeplooping(): # defines loop
@@ -291,6 +296,9 @@ def keeplooping(): # defines loop
     Timer(30, keeplooping).start()
 
 keeplooping() # initiates loop
+
+# -----------------------------------------------------------
+# ----------------- end busines -----------------------------
 
 #search_tweets(searchTerm,searchType,tweetNum)
 print ('-------99999999  end   9999-------')

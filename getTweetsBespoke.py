@@ -1,5 +1,6 @@
 import requests
 import saveTweets
+import clearJSONStore
 import saveLastTweetId
 import saveTweetsCSV
 import requests_oauthlib
@@ -42,6 +43,7 @@ def storeTweet (tid,un,nm,st) : #  this puts a record into the tweets database
         
 
 def lastTweet (): # get last row of database
+    print('----------- xxxxxxxxxxxxxxxxxxxxxxxxx----')
     dbName=str(termTXT)+'List.db'
     conA = lite.connect(dbName)
     with conA:
@@ -49,17 +51,21 @@ def lastTweet (): # get last row of database
         cur.execute('SELECT count(*) FROM tweets')
         data2 = cur.fetchone()
         county=data2[0]
-        print ('count  '+str(county))
-        cur.execute('SELECT max(tid) FROM tweets ') # shows highest value of a tweet_id in any record (i.e. the last one sent)
-        data3 = cur.fetchone()
-        global lastSavedTweetId
-        lastSavedTweetId=data3[0]
-        if lastSavedTweetId!=int:
-            lastSavedTweetId=0
-        lastSavedTweetId=int(lastSavedTweetId)
+        print ('county from inside lastTweet ='+str(county))
+        #cur.execute('SELECT max(tid) FROM tweets ') # shows highest value of a tweet_id in any record (i.e. the last one sent)
+        #cur.execute('SELECT * FROM tweets WHERE tid = (SELECT MAX(tid) FROM tweets) ') # shows highest value of a tweet_id in any record (i.e. the last one sent)
+        cur.execute('SELECT tid FROM tweets ORDER BY tid DESC ') # return last (maxRet) records
+        data3 = cur.fetchall()
+        global lastSavedTweetIdDB
+        trinkle=data3[0]
+        #lastSavedTweetIdDB=int(lastSavedTweetIdDB)
+        print ('ID of last tweet saved in database = ')
+        print (trinkle[0])
         print('---------------')
-        print ('ID of last tweet saved = '+str(lastSavedTweetId))
-        print('---------------')
+        lastSavedTweetIdDB=int(trinkle[0])
+           # lastSavedTweetIdDB=0
+        print('----------- xxxxxxxxxxxxxxxxxxxxxxxxx----')
+      
         
 # --------------------  end db setup ------------------------
     
@@ -72,11 +78,30 @@ tweetNum=""
 harvestPeriod=""
 introText=""
 text2=""
-lastSavedTweetId=0
+lastSavedTweetIdDB=0
 
 saveTweet=saveTweets.saveTweet
+clearJSON=clearJSONStore.clearJSON
 saveTweetCSV=saveTweetsCSV.saveTweet
 saveTweetId=saveLastTweetId.saveTweetId
+
+def retrieveTweetIdJS ():
+    contents = open('lastTweet.json', 'r')
+    cons = contents.read()
+    ltids = json.loads(cons)
+    global lastSavedTweetIdJS
+    lastSavedTweetIdJS=ltids['lasttweetID']
+    
+    print ('-------------')
+    print ('-------------')
+   
+    print('cons = '+cons)
+    print('ID of last tweet saved in JSON file = '+lastSavedTweetIdJS)
+    lastSavedTweetIdJS=int(lastSavedTweetIdJS)
+    print ('-------------')
+    print ('-------------')
+    contents.close()
+
 
 #  --------------------------------------------------------------------------------------
 #       ----------- end - above this line are set ups and imports etc ------------
@@ -84,11 +109,13 @@ saveTweetId=saveLastTweetId.saveTweetId
 
 
 # ------------- search twitter as a function ---------------
-def search_tweets (term,t_type,count) : # params: term= 'what to search for' type = 'how to search' Count = 'number of tweets' (max 100)    search_url_root='https://api.twitter.com/1.1/search/tweets.json?q='
+def search_tweets (term,count) : # params: term= 'what to search for' type = 'how to search' Count = 'number of tweets' (max 100)    search_url_root='https://api.twitter.com/1.1/search/tweets.json?q='
+    retrieveTweetIdJS()
     # check what type the search term is
+    clearJSON() # empties the temporary tweet store
     search_url_root='https://api.twitter.com/1.1/search/tweets.json?q='
-    x= term.find('#')
-    y=term.find('@')
+    x= term.find('#') # look to see what position the hashtag is
+    y=term.find('@') # look to see what position the @ sign is
     global termTXT
     if x==0 : #  this is checking if the first character is a hashtag
         print ('searching twitter API for hashtag: '+term)
@@ -96,7 +123,7 @@ def search_tweets (term,t_type,count) : # params: term= 'what to search for' typ
         termTXT= term2 # allows the search term to be passed as a parameter
         term='%23'+term2 # add unicode for # sign (%23) if a hashtag search term
     else:
-        if y==0:
+        if y==0: # if @ is the first character
             print ('searching twitter API for username: @'+term)
             term3 = term.split('@')[1] # strip off the @
             termTXT= term3 # allows the search term to be passed as a parameter
@@ -104,7 +131,7 @@ def search_tweets (term,t_type,count) : # params: term= 'what to search for' typ
         else:
             print ('searching for term: '+term) # or just search!
             termTXT= term # allows the search term to be passed as a parameter
-    search_url=str(search_url_root+term+'&count='+count)
+    search_url=str(search_url_root+term+'&count='+count) # create the full search url from search term and admin setting for number of results
     print ('---------------------------')
     print ()
     try:
@@ -116,56 +143,42 @@ def search_tweets (term,t_type,count) : # params: term= 'what to search for' typ
         js = json.loads(j)
         c = int(count)
         x=0
-        # lastTweetId=""
-        try:
-            lastTweet()
-        except:
-            createDB(termTXT)
-        while (x<c):
+        while (x<c-1):
             try:
-                
                 tweet_id = js['statuses'][x]['id']
                 testID=int(tweet_id)
                 print ('testID= '+str(testID))
-                print ('lastSavedTweetId= '+str(lastSavedTweetId))
                 print('-------')
-                if testID>lastSavedTweetId and testID>0:
-                    print('testID-lastSavedTweetId = '+str(testID-lastSavedTweetId))
-                    print ('---------------')
-                    if (x==0):
-                        saveTweetId (str(tweet_id))
-                    print ('Tweet '+str(x+1)+' of '+str(c)+'. Tweet id: '+str(tweet_id))
-                    name = js['statuses'][x]['user']['name']
-                    user = js['statuses'][x]['user']['screen_name']
-                    username= '@'+user
-                    print ('From:'+username+'('+name+')')
-                    tweet = js['statuses'][x]['text']
-                    # following line gets rid of Twitter line breaks...
-                    tweet=tweet.replace("\n","")
-                    print (tweet)
-                    if (c-x>1):
-                        fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
-                    else:
-                        fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
-                
-                    saveTweet(fullTweet)
-                    tid=int(tweet_id)
-                    storeTweet(tid,username,name,tweet)
-                    fullTweetCSV=str(tweet_id)+','+str(username)+','+str(name)+','+str(tweet)
-                    saveTweetCSV(fullTweetCSV)
+                print ('---------------')
+                if (x==0):
+                    saveTweetId (str(tweet_id))
+                print ('Tweet '+str(x+1)+' of '+str(c)+'. Tweet id: '+str(tweet_id))
+                name = js['statuses'][x]['user']['name']
+                user = js['statuses'][x]['user']['screen_name']
+                username= '@'+user
+                print ('From:'+username+'('+name+')')
+                tweet = js['statuses'][x]['text']
+                # following line gets rid of Twitter line breaks...
+                tweet=tweet.replace("\n","")
+                print (tweet)
+                if (c-x>1):
+                    fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
                 else:
-                    print('testID-lastSavedTweetId = '+str(testID-lastSavedTweetId))
+                    fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
+            
+                saveTweet(fullTweet)
+                tid=int(tweet_id)
+                fullTweetCSV=str(tweet_id)+','+str(username)+','+str(name)+','+str(tweet)
+                saveTweetCSV(fullTweetCSV)
+                
             except UnicodeEncodeError:
                 print ('Tweet text not available - dodgy term in tweet broke the API')
                 print ('---------------')
             x=x+1
-            #lastTweetId=str(tweet_id)
            
     except KeyError:
         print ('twitter search terms broke the API')
         print ('---------------')
-    
-    
     
 # ------------- end search twitter -------------------------
 
@@ -202,7 +215,8 @@ def loadAdmin (url):
     ff=t2.split(',')
     global text2
     text2 =ff[1]
-
+    print('-------- end of loadAdmin() ------------------')
+    print('----------------------------------------------')
    
     
 # ----------------------------------------------------------
@@ -220,31 +234,46 @@ def retrieveArray (url):
 
     print ('full list returned raw with line breaks --------')
     #print (yy)
-    print ('stopwords --------')
+    print ('results for '+url+' --------')
     # print (results)
     print ('--------')
     swCount=0
     for count in results:
         swCount+=1
-    print ('count  -----')
+    print ('count  for ' + url +'-----')
     print ('count = '+str(swCount))
+    print (' end retrieveArray() ----------------------')
     # end retrieveArray
     
 # ------------- end retrieve data ---------------------------
+# ------------- end admin ad functions etc ------------------
 
-loadAdmin (adminURL)
-retrieveArray(stopwordsURL)
-search_tweets(searchTerm,searchType,tweetNum)
+
+# -----------------------------------------------------------
+# ------------- the business starts here---------------------
+# -----------------------------------------------------------
+
+retrieveTweetIdJS()
+
+loadAdmin (adminURL) #load admin settings from google sheet
+retrieveArray(stopwordsURL) #load stopwords from stopwords google sheet
+
+search_tweets(searchTerm,tweetNum) # execute the twitter API search using the admin settings loaded
+
 try:
-    createDB (termTXT)
+    createDB (termTXT) # creates or loads a new database which is unique for any search term
 except:
-    print('first createDB failed')
-def keeplooping():
+    print('first createDB failed')  # exception message
+def keeplooping():  # define the loop and what it executes (rate is set by loaded setting: 'harvestPeriod' 
     createDB (termTXT)
-    search_tweets(searchTerm,searchType,tweetNum)
-    Timer(30, keeplooping).start()
+    search_tweets(searchTerm,tweetNum)
+    Timer(int(harvestPeriod), keeplooping).start()
 
-keeplooping()
+keeplooping() # initiates the loop
+
+# -----------------------------------------------------------
+# ----------------- end busines -----------------------------
+
 
 #search_tweets(searchTerm,searchType,tweetNum)
 print ('-------99999999  end   9999-------')
