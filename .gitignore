@@ -200,7 +200,7 @@ var/
 sdist/
 develop-eggs/
 .installed.cfg
-.PMRkeys
+.PMRkeys.py
 
 
 # Installer logs
