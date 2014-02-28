@@ -137,6 +137,89 @@ def search_tweets (term,count) : # params: term= 'what to search for' type = 'ho
     
 # ------------- end search twitter -------------------------
 
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ >>>>>>>>>>>>>>>>>>>>>>>>>>
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ >>>>>>>>>>>>>>>>>>>>>>>>>>
+
+# ------------- search twitter as a function 2 ---------------
+def search_tweets_inc (term,count) : # params: term= 'what to search for' type = 'how to search' Count = 'number of tweets' (max 100)    search_url_root='https://api.twitter.com/1.1/search/tweets.json?q='
+    retrieveTweetIdJS()
+    # check what type the search term is
+    clearJSON() # empties the temporary tweet store (line break version)
+    clearJSON2() # empties the temporary tweet store (JSON version)
+    saveTweet2('{"store":[')
+    search_url_root='https://api.twitter.com/1.1/search/tweets.json?q='
+    x= term.find('#') # look to see what position the hashtag is
+    y=term.find('@') # look to see what position the @ sign is
+    global termTXT
+    if x==0 : #  this is checking if the first character is a hashtag
+        print ('searching twitter API for hashtag: '+term)
+        term2 = term.split('#')[1] # strip off the hash
+        termTXT= term2 # allows the search term to be passed as a parameter
+        term='%23'+term2 # add unicode for # sign (%23) if a hashtag search term
+    else:
+        if y==0: # if @ is the first character
+            print ('searching twitter API for username: @'+term)
+            term3 = term.split('@')[1] # strip off the @
+            termTXT= term3 # allows the search term to be passed as a parameter
+            term='%40'+term3 # add unicode for @ sign (%40) if a username search
+        else:
+            print ('searching for term: '+term) # or just search!
+            termTXT= term # allows the search term to be passed as a parameter
+    search_url=str(search_url_root+term+'&count='+count) # create the full search url from search term and admin setting for number of results
+    print ('---------------------------')
+    print ()
+    try:
+        auth = OAuth1(PMRkeys.PMR_consumer_key, PMRkeys.PMR_consumer_secret,PMRkeys.PMR_access_token,PMRkeys.PMR_access_secret )
+        auth_response=requests.get(search_url, auth=auth)
+        # print ('auth_response.text') # - uncomment to check the text is returning as expected
+        # print (auth_response.text) # - uncomment to check the text is returning as expected
+        j = (auth_response.text)
+        js = json.loads(j)
+        c = int(count)
+        x=0
+        while (x<c-1):
+            try:
+                tweet_id = js['statuses'][x]['id']
+                testID=int(tweet_id)
+                print ('testID= '+str(testID))
+                print('-------')
+                print ('---------------')
+                if (x==0):
+                    saveTweetId (str(tweet_id))
+                print ('Tweet '+str(x+1)+' of '+str(c)+'. Tweet id: '+str(tweet_id))
+                name = js['statuses'][x]['user']['name']
+                user = js['statuses'][x]['user']['screen_name']
+                username= '@'+user
+                print ('From:'+username+'('+name+')')
+                tweet = js['statuses'][x]['text']
+                # following line gets rid of Twitter line breaks...
+                tweet=tweet.replace("\n","")
+                tweet=tweet.replace("\"","'")
+                
+                print (tweet)
+                fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
+                fullTweet2='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } ,'
+                print ('WTF = x = '+str(x))
+                if (x==c-2):
+                    fullTweet2='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } ]}'
+                saveTweet(fullTweet)
+                saveTweet2(fullTweet2)
+                tid=int(tweet_id)
+                fullTweetCSV=str(tweet_id)+','+str(username)+','+str(name)+','+str(tweet)
+                saveTweetCSV(fullTweetCSV)                
+            except UnicodeEncodeError:
+                print ('Tweet text not available - dodgy term in tweet broke the API')
+                print ('---------------')
+            x=x+1
+    except KeyError:
+        print ('twitter search terms broke the API')
+        print ('---------------')
+    
+# ------------- end search twitter2 -------------------------
+
+#@@@@@@@@@@@@@@@@@@@
+
 # ------------- get admin settings--------------------------
 def loadAdmin (url):
     retrieveArray(adminURL)
