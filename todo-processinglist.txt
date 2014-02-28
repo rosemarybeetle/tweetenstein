@@ -1,0 +1,8 @@
+is it a RT?
+does it contain hashtags - and can API give those anyway
+does it CONTAIN user names:
+does it contain urls
+does it contain stop characters
+what other words are left
+get rid of stop words
+

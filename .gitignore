@@ -200,6 +200,8 @@ var/
 sdist/
 develop-eggs/
 .installed.cfg
+.PMRkeys
+
 
 # Installer logs
 pip-log.txt
