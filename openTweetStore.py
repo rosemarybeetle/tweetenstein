@@ -1,5 +1,16 @@
 # retrieveTweetsStoreContents
 import json
+# saveTweets.py
+
+def saveUserMentions (un):
+    un=un.replace(":","")
+    un=un.replace("...","")
+    usernames = open('mentions.json', 'a')
+    usernames.write(un)
+    usernames.write('\n')
+    usernames.close()
+
+
 def retrieveTweetStore ():
     savedTweets = open('tweetstore2.json', 'r')
     cons = savedTweets.read()
@@ -7,7 +18,7 @@ def retrieveTweetStore ():
     x=0
     l=0
     global hh
-    while x<150: # not dynamic, but x can never be more than 100 anyway due to twitter api rate cappining
+    while x<150: # not dynamic, but x can never be more than 100 anyway due to twitter api rate capping
         try:
             hh=tweets['store'][x]['tweet_id']
             print ('hh = '+hh)
@@ -23,13 +34,13 @@ def retrieveTweetStore ():
             hh=tweets['store'][x]['tweet_text']
             print ('tweet['+str(x)+'] = '+hh)
             yy=hh.split(' ')
-            
             print (yy)
             le=len(yy)
             i=0
             while i<le:
                 at=yy[i].find('@')
                 if at==0:
+                    saveUserMentions(yy[i])
                     print (yy[i])
                 i=i+1
             print ('length of yy[] = '+str(le) )
@@ -38,6 +49,7 @@ def retrieveTweetStore ():
         except:
             l=x
             print ('returned '+str(l)+' tweets')
+            
             break
     print ('-------------')
     print ('-------------')
