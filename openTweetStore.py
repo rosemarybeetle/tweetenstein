@@ -25,6 +25,14 @@ def retrieveTweetStore ():
             yy=hh.split(' ')
             
             print (yy)
+            le=len(yy)
+            i=0
+            while i<le:
+                at=yy[i].find('@')
+                if at==0:
+                    print (yy[i])
+                i=i+1
+            print ('length of yy[] = '+str(le) )
             print('#########')
             x=x+1
         except:
