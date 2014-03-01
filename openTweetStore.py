@@ -63,4 +63,3 @@ def retrieveTweetStore ():
     print ('-------------')
     savedTweets.close()
 retrieveTweetStore()
-
