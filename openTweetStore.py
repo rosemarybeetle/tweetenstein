@@ -6,7 +6,7 @@ def saveUserMentions (un):
     un=un.replace(":","")
     un=un.replace("...","")
     usernames = open('mentions.txt', 'a')
-    usernames.write('\''+un+'\',')
+    usernames.write(',\''+un+'\'')
     usernames.close()
 
 
@@ -38,20 +38,38 @@ def retrieveTweetStore ():
             yy=hh.split(' ')
             print (yy)
             le=len(yy)
+            ck=0
             i=0
             while i<le:
                 at=yy[i].find('@')
                 if at==0:
-                    saveUserMentions(yy[i])
-                    print (yy[i])
+                    
+                    if i<(le-1) and x==0 and ck==0:
+                        ck=1
+                        print ('BANG')
+                        usernames = open('mentions.txt', 'a')
+                        oo=yy[i]
+                        oo=oo.replace(":","")
+                        oo=oo.replace("...","")
+                        usernames.write('\''+oo+'\'')
+                        print ('oo= ='+oo)
+                        usernames.close()
+                    else:
+                        saveUserMentions(yy[i])
+                        print (yy[i])
+                        print ('i = '+str(i))
+                        ck=ck+1
+                  
+                        
                 i=i+1
-           
+            
             print ('length of yy[] = '+str(le) )
             print('#########')
+            
             x=x+1
         except:
             usernames = open('mentions.txt', 'a')
-            usernames.write('\'\']')
+            usernames.write(']')
             usernames.close()
             l=x
             print ('returned '+str(l)+' tweets')
