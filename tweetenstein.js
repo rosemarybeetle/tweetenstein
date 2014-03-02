@@ -36,14 +36,14 @@ $.getJSON( "lastTweet.json", function( data ) {
 function harvestTweets ()
 {
 console.log('start harvestTweets');
-$.getJSON( "tweetstore.json", function( adata ) {
-console.log(adata.length);
-console.log(adata);
-for ( var i = 0; i < adata.length; i++ ) {
-    var twitems = [];
-	$.each( adata, function() {
-	twitems.push(adata[i].username);
-    console.log(adata[i].username)
+var twitems = [];
+$.getJSON( "tweetstore2.json", function(adata) {
+console.log('l = '+adata.store.length);
+l=adata.store.length; // set max 'l' based on length of imported array
+for ( var i = 0; i < l; i++ ) {
+    $.each( adata.store, function(key,val) {
+	
+    console.log(key,val);
 	
   });
   
@@ -51,6 +51,7 @@ for ( var i = 0; i < adata.length; i++ ) {
 	console.log('wtf')
     console.log(adata[i].username);
 }
+
 console.log('inside harvestTweets call to tweetstore.json');
  /*
  $.each( data, function() {
