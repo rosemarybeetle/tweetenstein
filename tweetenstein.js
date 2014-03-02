@@ -36,21 +36,27 @@ $.getJSON( "lastTweet.json", function( data ) {
 function harvestTweets ()
 {
 console.log('start harvestTweets');
-var twitems = [];
+
 $.getJSON( "tweetstore2.json", function(adata) {
 console.log('l = '+adata.store.length);
 l=adata.store.length; // set max 'l' based on length of imported array
-for ( var i = 0; i < l; i++ ) {
-    $.each( adata.store, function(key,val) {
+
+$.each( adata.store, function(key,val) {
+	console.log('key= '+key,val.username,val.screen_name);
+	usernames.push (val.username);
+	screenames.push (val.screen_name)
+
 	
-    console.log(key,val);
 	
-  });
+	
+  }  );
   
-  //console.log('twitems'+twitems);
+  console.log(usernames);
+  console.log(screenames);
 	console.log('wtf')
-    console.log(adata[i].username);
-}
+    //console.log(adata[i].username);
+//for ( var i = 0; i < l; i++ ) {
+//}
 
 console.log('inside harvestTweets call to tweetstore.json');
  /*
@@ -72,8 +78,12 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 }*/
 // +++
 $( document ).ready(function() {
+
 console.log ('Start setUp initialisation...');
 
+window.l= 0;// used later to stotre array length
+window.usernames = [];
+window.screenames = [];
 loadLastTweet ();
 
 harvestTweets ();
@@ -100,7 +110,10 @@ window.xx=Math.random(1)*W-35;//initialise random x position variable;
 window.yy=Math.random(1)*H;//initialise random y position variable;
 txt.fillStyle="#86DDDE";
 //txt.fillText(txty,xx,yy);
-txt.fillText(lasttweetID,xx,yy);
+ran= Math.floor((Math.random()*l)+1);
+console.log ('random number = '+ran)
+//txt.fillText(lasttweetID,xx,yy);
+txt.fillText(screenames[ran],xx,yy);
 }
 function plotPulse() {
 myCanvas.width=W;
@@ -116,5 +129,6 @@ window.txty="Hello World...";
 $( document ).ready(function() {
 console.log ('document ready from intervals');
 setInterval(function(){plotPulse()},phi2); //redraws a backgound to make the text visible
+//setInterval(function(){harvestTweets(), phi2}; // check for changes
 setInterval(function(){plotLoop(txty)},phi); // fires out text at rate set by period: phi
 });
