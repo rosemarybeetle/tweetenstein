@@ -98,6 +98,10 @@ var ctxt=document.getElementById("myCanvas");
 window.txt=ctxt.getContext("2d");
 window.fontDef="20px Arial";
 txt.font=fontDef;
+var ctxt=document.getElementById("myCanvas2");
+window.txt2=ctxt.getContext("2d");
+window.fontDef2="30px Arial";
+txt2.font=fontDef2;
 console.log('setUp complete!!!');
 });
 }
@@ -108,27 +112,32 @@ function plotLoop(txty){
 screenSize();
 window.xx=Math.random(1)*W-35;//initialise random x position variable;
 window.yy=Math.random(1)*H;//initialise random y position variable;
-txt.fillStyle="#86DDDE";
+window.xx2=Math.random(1)*W-35;//initialise random x position variable;
+window.yy2=Math.random(1)*H;//initialise random y position variable;
+txt.fillStyle="yellow";
+txt2.fillStyle="purple";
 //txt.fillText(txty,xx,yy);
 ran= Math.floor((Math.random()*l)+1);
 console.log ('random number = '+ran)
 //txt.fillText(lasttweetID,xx,yy);
 txt.fillText(screenames[ran],xx,yy);
+txt2.fillText(usernames[ran],xx2,yy2);
 }
 function plotPulse() {
 myCanvas.width=W;
 myCanvas.height=H;
 window.fontDef="20px Arial";
 txt.font=fontDef;
+txt2.font=fontDef2;
 }
 // speed of text draw
-window.phi=20;
+window.phi=70;
 // speed of pulse
 window.phi2=4000;
 window.txty="Hello World...";
 $( document ).ready(function() {
 console.log ('document ready from intervals');
 setInterval(function(){plotPulse()},phi2); //redraws a backgound to make the text visible
-//setInterval(function(){harvestTweets(), phi2}; // check for changes
+setInterval(function(){harvestTweets()}, phi2); // check for changes
 setInterval(function(){plotLoop(txty)},phi); // fires out text at rate set by period: phi
 });
