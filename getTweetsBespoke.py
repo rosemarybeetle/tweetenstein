@@ -15,6 +15,7 @@ import sqlite3 as lite # sqlite database
 import sys
 
 
+
   
 # ---------- define variables -------------------------------
 adminURL='https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdGp1NmxJVXVHcGhIel9CNUxJUk8yYXc&output=csv'
@@ -120,8 +121,6 @@ def search_tweets (term,count) : # params: term= 'what to search for' type = 'ho
                 fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '
                 fullTweet2='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } ,'
                 print ('WTF = x = '+str(x))
-                if (x==c-2):
-                    fullTweet2='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } ]}'
                 saveTweet(fullTweet)
                 saveTweet2(fullTweet2)
                 tid=int(tweet_id)
@@ -131,6 +130,8 @@ def search_tweets (term,count) : # params: term= 'what to search for' type = 'ho
                 print ('Tweet text not available - dodgy term in tweet broke the API')
                 print ('---------------')
             x=x+1
+        fullTweet2='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } ]}'
+        saveTweet2(fullTweet2)
     except KeyError:
         print ('twitter search terms broke the API')
         print ('---------------')
