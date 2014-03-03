@@ -14,6 +14,17 @@ if (Modernizr.canvas) {
 }
 Optional test script to identify any elements (and handle them if necessary
 ------------------*/
+function speakTest(speech)
+{
+console.log('test alert')
+//var gurl= Trim('http://translate.google.com/translate_tts?ie=UTF-8&q='+speech);
+console.log(speech);
+//console.log(gurl);
+document.getElementById('framer').src = 'http://translate.google.com/translate_tts?&tl=en-US&ie=UTF-8&q='+speech;
+//var myWin=window.open("http://translate.google.com/translate_tts?ie=UTF-8&q=hottt%20creammy%20thighs&tl=en&total=1&idx=0&textlen=11&prev=input", '_blank','1','1');
+//myWin.close();
+myWin.visible=0;
+}
 function screenSize()
 {
 window.W=document.body.clientWidth;

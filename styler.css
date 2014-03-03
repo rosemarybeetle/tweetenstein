@@ -14,7 +14,11 @@ margin:0px"
   }
 }
 */
-
+.hideFrame {
+width:100%;
+height: 1%;
+display:none;
+}
 /* setting widths,heights to 100% to fill screen*/
 html,body {
 width: 100%;
