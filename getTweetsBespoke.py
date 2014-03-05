@@ -116,6 +116,7 @@ def search_tweets (term,count) : # params: term= 'what to search for' type = 'ho
                 # following line gets rid of Twitter line breaks...
                 tweet=tweet.replace("\n","")
                 tweet=tweet.replace("\"","'")
+                tweet=tweet.replace("\\","")
                 
                 print (tweet)
                 fullTweet='{"tweet_id": "'+str(tweet_id)+'","username": "'+str(username)+'","screen_name": "'+str(name)+'","tweet_text": "'+str(tweet)+'" } '

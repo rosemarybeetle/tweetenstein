@@ -80,6 +80,7 @@ console.log('inside harvestTweets call to tweetstore.json');
  
 }
 function setUp() {
+
 /* optional checking for html5 file apis, needed to read data
 if (window.File && window.FileReader && window.FileList && window.Blob) {
   console.log("Yay - The File APIs are supported by your browser.")
@@ -88,10 +89,10 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 }*/
 // +++
 $( document ).ready(function() {
-
+speakTest('hello there');
 console.log ('Start setUp initialisation...');
 
-window.l= 0;// used later to stotre array length
+window.l= 0;// used later to store array length
 window.usernames = [];
 window.screenames = [];
 loadLastTweet ();
@@ -104,12 +105,14 @@ console.log ("Hello, Tweetenstein.js...");
 screenSize();
 myCanvas.width=W;
 myCanvas.height = H;
+myCanvas2.width=W;
+myCanvas2.height = H;
 var ctxt=document.getElementById("myCanvas");
 window.txt=ctxt.getContext("2d");
 window.fontDef="20px Arial";
 txt.font=fontDef;
-var ctxt=document.getElementById("myCanvas2");
-window.txt2=ctxt.getContext("2d");
+var ctxt2=document.getElementById("myCanvas2");
+window.txt2=ctxt2.getContext("2d");
 window.fontDef2="30px Arial";
 txt2.font=fontDef2;
 console.log('setUp complete!!!');
@@ -132,7 +135,9 @@ console.log ('random number = '+ran)
 //txt.fillText(lasttweetID,xx,yy);
 txt.fillText(screenames[ran],xx,yy);
 txt2.fillText(usernames[ran],xx2,yy2);
-//speakTest('hello');
+//
+//
+
 }
 function plotPulse() {
 myCanvas.width=W;
@@ -152,4 +157,14 @@ setInterval(function(){plotPulse()},phi2); //redraws a backgound to make the tex
 setInterval(function(){harvestTweets()}, phi2); // check for changes
 setInterval(function(){plotLoop(txty)},phi); // fires out text at rate set by period: phi
 //setInterval(function(){speakTest("hello")}, phi2); // check for changes
+
+
 });
+window.onkeyup = keyup;
+function keyup()
+{
+console.log('inside keyup detection ');
+window.g=screenames[ran];
+speakTest(g);
+ 
+}
