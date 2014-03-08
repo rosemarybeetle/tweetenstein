@@ -1,22 +1,7 @@
-/* --------------------------------------
------------------------------------------
-Andrew Lewis 2014
-Canvas visualiser script to ingest tweet data and turn it into something else
-v.1 31 Jan 2014 - test
-github
-*/
 
-/* -------------
-if (Modernizr.canvas) {
-   console.log ("let's draw some shapes!")
-} else {
-   console.log("no native canvas support available :( ")
-}
-Optional test script to identify any elements (and handle them if necessary
-------------------*/
 function speakTest(speech)
 {
-//speech=screenames[ran];
+
 console.log('test alert')
 //var gurl= Trim('http://translate.google.com/translate_tts?ie=UTF-8&q='+speech);
 console.log(speech);
@@ -73,13 +58,7 @@ $.each( adata.store, function(key,val) {
 //}
 
 console.log('inside harvestTweets call to tweetstore.json');
- /*
- $.each( data, function() {
-    console.log(data.username)
-	//twitems.push( username, tweet_id );
-  });
-  console.log('twitems'+twitems);
-  */
+ 
  });
  
 }
@@ -129,37 +108,6 @@ catch (e) { console.log("FAIL"+e)};
 }
 // -------------------------------end setup ---------------------
 
-
-function plotLoop(txty){
-screenSize();
-window.xx=Math.random(1)*W-35;//initialise random x position variable;
-window.yy=Math.random(1)*H;//initialise random y position variable;
-window.xx2=Math.random(1)*W-35;//initialise random x position variable;
-window.yy2=Math.random(1)*H;//initialise random y position variable;
-txt.fillStyle="#000033";
-txt2.fillStyle="purple";
-//txt.fillText(txty,xx,yy);
-ran= Math.floor((Math.random()*l)+1);
-console.log ('random number = '+ran)
-//txt.fillText(lasttweetID,xx,yy);
-txt.fillText(screenames[ran],xx,yy);
-txt2.fillText(usernames[ran],xx2,yy2);
-//
-//
-
-}
-function plotPulse() {
-myCanvas.width=W;
-myCanvas.height=H;
-txt.font=fontDef;
-window.fontDef="20px Arial";
-}
-function plotPulse2 () {
-myCanvas2.width=W;
-myCanvas2.height=H;
-window.fontDef2="30px Arial";
-txt2.font=fontDef2;
-}
 // speed of text draw
 window.phi=100;
 // speed of pulse
@@ -168,17 +116,15 @@ window.phi3=3500;
 window.txty="Hello World...";
 $( document ).ready(function() {
 console.log ('document ready from intervals');
-setInterval(function(){plotPulse()},phi2); //redraws a backgound to make the text visible
-setInterval(function(){plotPulse2()},phi3); //redraws a backgound to make the text visible
 setInterval(function(){harvestTweets()}, phi2); // check for changes
-setInterval(function(){plotLoop(txty)},phi); // fires out text at rate set by period: phi
-//setInterval(function(){speakTest("hello")}, phi2); // check for changes
 
 
 });
 window.onkeyup = keyup;
 function keyup()
 {
+window.ran= Math.floor((Math.random()*l)+1);
+console.log ('random number = '+ran)
 console.log('inside keyup detection ');
 window.g=screenames[ran];
 speakTest(g);
