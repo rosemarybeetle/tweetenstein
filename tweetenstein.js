@@ -43,6 +43,10 @@ $.getJSON( "lastTweet.json", function( data ) {
   console.log('Success from inside getJson call to lastTweet.json');
  });
 }
+function mouthoff(le)
+{
+window.mouthy.src="images/MOUTH-2.jpg";
+}
 function harvestTweets ()
 {
 console.log('start harvestTweets');

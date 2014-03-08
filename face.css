@@ -1,0 +1,59 @@
+ .mouth {
+	position:fixed;
+left:5%;
+float: bottom;
+height: 50%;
+
+
+}
+ .eyes {
+	position:fixed;
+left:15%;
+top:0%;
+}
+.face {
+}
+
+
+html,body ,.face{
+width: 100%;
+height: 100%;
+//background-color:blue;
+}
+
+/*  --------  and (max-width: 900px)  and (min-width: 600px)--------  */
+@media screen  {
+html,body,.face {
+width: 100%;
+height: 100%;
+} 
+
+.mouth{
+width: 90%;
+height: 50%;
+position: absolute;
+bottom:0px;
+}
+  
+ .eyes {
+width:70%;
+}
+  #mouthy {
+  
+    width: 100%;
+	height: 100%;
+	
+  }
+
+ #eye-left {
+ width:50%;
+ float: left;
+ }
+ #eye-right {
+ width:50%;
+ float: right;
+ }
+}
+
+
+
