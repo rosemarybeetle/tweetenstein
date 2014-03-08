@@ -127,6 +127,8 @@ window.ran= Math.floor((Math.random()*l)+1);
 console.log ('random number = '+ran)
 console.log('inside keyup detection ');
 window.g=screenames[ran];
+tt=g.length;
+alert(tt);
 speakTest(g);
  
 }
