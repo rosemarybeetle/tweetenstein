@@ -3,13 +3,14 @@
 left:5%;
 float: bottom;
 height: 50%;
-
+z-index:0;
 
 }
  .eyes {
 	position:fixed;
 left:15%;
 top:0%;
+z-index:2;
 }
 .face {
 }
@@ -33,6 +34,7 @@ width: 90%;
 height: 50%;
 position: absolute;
 bottom:0px;
+z-index:1;
 }
   
  .eyes {

@@ -28,13 +28,32 @@ $.getJSON( "lastTweet.json", function( data ) {
   console.log('Success from inside getJson call to lastTweet.json');
  });
 }
+function swapMouth(le)
+
+{
+console.log ('le- '+le)
+console.log ('mouthStop = '+mouthStop);
+if (le > mouthStop)
+{
+console.log('if is working'); 
+window.ran2= Math.floor((Math.random()*mouthNumber)+1);
+console.log ('random number = '+ran2)
+//console.log(leng);
+window.mouthy.src='images/MOUTH-2.jpg';
+mouthStop+=1;
+} else { 
+console.log('if ELSE is working ');
+mouthStop=0; // reset timer
+clearInterval(gobo)
+}
+console.log('inside swapMouth');
+
+}
 function mouthoff(le)
 {
-//setInterval(function(){plotPulse2()},phi3); //redraws a backgound to make the text visible
-window.ran2= Math.floor((Math.random()*le)+1);
-alert ('random number = '+ran2)
-//alert(leng);
-window.mouthy.src='images/MOUTH-2.jpg';
+window.mouthTimer=.08;
+window.gobo = setInterval(function(){swapMouth(le)},mouthTimer); //redraws a backgound to make the text visible
+//swapMouth(le);
 }
 function harvestTweets ()
 {
@@ -45,7 +64,7 @@ console.log('l = '+adata.store.length);
 l=adata.store.length; // set max 'l' based on length of imported array
 
 $.each( adata.store, function(key,val) {
-	console.log('key= '+key,val.username,val.screen_name);
+	//console.log('key= '+key,val.username,val.screen_name);
 	usernames.push (val.username);
 	screenames.push (val.screen_name)
 
@@ -76,7 +95,8 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 }*/
 // +++
 $( document ).ready(function() {
-window.leng=0;
+window.leng=1;
+window.mouthStop=0; // counter needed by swapMouth
 window.mouthNumber=8; // determines how many mouth images can be swapped
 speakTest('hello there');
 console.log ('Start setUp initialisation...');
@@ -138,3 +158,6 @@ window.leng=g.length;
 speakTest(g);
  
 }
+$( document ).ready(function() {
+setUp();
+});
