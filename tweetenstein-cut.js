@@ -39,7 +39,8 @@ console.log('if is working');
 window.ran2= Math.floor((Math.random()*mouthNumber)+1);
 console.log ('random number = '+ran2)
 //console.log(leng);
-window.mouthy.src='images/MOUTH-2.jpg';
+imger = 'images/MOUTH-'+ran2+'.jpg';
+window.mouthy.src=imger;
 mouthStop+=1;
 } else { 
 console.log('if ELSE is working ');
@@ -51,7 +52,7 @@ console.log('inside swapMouth');
 }
 function mouthoff(le)
 {
-window.mouthTimer=.08;
+window.mouthTimer=80;
 window.gobo = setInterval(function(){swapMouth(le)},mouthTimer); //redraws a backgound to make the text visible
 //swapMouth(le);
 }
