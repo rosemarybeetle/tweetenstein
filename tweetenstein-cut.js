@@ -7,7 +7,7 @@ console.log('test alert')
 console.log(speech);
 //console.log(gurl);
 document.getElementById('framer').src = 'http://translate.google.com/translate_tts?&tl=en-US&ie=UTF-8&q='+speech;
-
+mouthoff(leng);
 }
 function screenSize()
 {
@@ -30,7 +30,11 @@ $.getJSON( "lastTweet.json", function( data ) {
 }
 function mouthoff(le)
 {
-window.mouthy.src="images/MOUTH-2.jpg";
+//setInterval(function(){plotPulse2()},phi3); //redraws a backgound to make the text visible
+window.ran2= Math.floor((Math.random()*le)+1);
+alert ('random number = '+ran2)
+//alert(leng);
+window.mouthy.src='images/MOUTH-2.jpg';
 }
 function harvestTweets ()
 {
@@ -72,6 +76,8 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 }*/
 // +++
 $( document ).ready(function() {
+window.leng=0;
+window.mouthNumber=8; // determines how many mouth images can be swapped
 speakTest('hello there');
 console.log ('Start setUp initialisation...');
 
@@ -86,7 +92,7 @@ harvestTweets ();
 console.log ("Hello, Tweetenstein.js...");
 try {
 
-screenSize();
+
 
 myCanvas.width=W;
 myCanvas.height = H;
@@ -100,11 +106,12 @@ var ctxt2=document.getElementById("myCanvas2");
 window.txt2=ctxt2.getContext("2d");
 window.fontDef2="30px Arial";
 txt2.font=fontDef2;
-console.log('setUp complete!!!');
+
 }
 catch (e) { console.log("FAIL"+e)};
 }
 	);
+	console.log('setUp complete!!!');
 }
 // -------------------------------end setup ---------------------
 
@@ -127,8 +134,7 @@ window.ran= Math.floor((Math.random()*l)+1);
 console.log ('random number = '+ran)
 console.log('inside keyup detection ');
 window.g=screenames[ran];
-tt=g.length;
-alert(tt);
+window.leng=g.length;
 speakTest(g);
  
 }
