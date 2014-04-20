@@ -1,17 +1,27 @@
  .mouth {
 	position:fixed;
-left:5%;
+left:0%;
 float: bottom;
 height: 50%;
-z-index:0;
+z-index:1;
 
 }
  .eyes {
 	position:fixed;
-left:15%;
+left:10%;
 top:0%;
-z-index:2;
+z-index:0;
 }
+.nose {
+	position:fixed;
+left:0%;
+//float: center;
+//top:0%;
+width: 100%;
+height: 100%;
+z-index:-3;
+}
+
 .face {
 }
 
@@ -30,7 +40,7 @@ height: 100%;
 } 
 
 .mouth{
-width: 90%;
+width: 100%;
 height: 50%;
 position: absolute;
 bottom:0px;
@@ -38,7 +48,12 @@ z-index:1;
 }
   
  .eyes {
-width:70%;
+width:80%;
+z-index:0;
+}
+.nose {
+width:100%;
+z-index:-3;
 }
   #mouthy {
   
@@ -48,12 +63,16 @@ width:70%;
   }
 
  #eye-left {
- width:50%;
+ width:40%;
  float: left;
  }
  #eye-right {
- width:50%;
+ width:40%;
  float: right;
+ }
+ #nosey {
+ width: 100%;
+ height: 100%;
  }
 }
 
