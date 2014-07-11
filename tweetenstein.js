@@ -45,7 +45,7 @@ $.getJSON( "lastTweet.json", function( data ) {
 }
 function mouthoff(le)
 {
-window.mouthy.src="images/MOUTH-2.jpg";
+window.mouthy.src="images/faces/1/MOUTH-2.jpg";
 }
 function harvestTweets ()
 {
@@ -131,6 +131,7 @@ catch (e) { console.log("FAIL"+e)};
 
 
 function plotLoop(txty){
+// this is grabbing users' details and randomly writing them to the sreen
 screenSize();
 window.xx=Math.random(1)*W-35;//initialise random x position variable;
 window.yy=Math.random(1)*H;//initialise random y position variable;
@@ -165,12 +166,13 @@ window.phi=100;
 // speed of pulse
 window.phi2=4000;
 window.phi3=3500;
+window.phi4=500;
 window.txty="Hello World...";
 $( document ).ready(function() {
 console.log ('document ready from intervals');
 setInterval(function(){plotPulse()},phi2); //redraws a backgound to make the text visible
 setInterval(function(){plotPulse2()},phi3); //redraws a backgound to make the text visible
-setInterval(function(){harvestTweets()}, phi2); // check for changes
+setInterval(function(){harvestTweets()}, phi4); // check for changes
 setInterval(function(){plotLoop(txty)},phi); // fires out text at rate set by period: phi
 //setInterval(function(){speakTest("hello")}, phi2); // check for changes
 
