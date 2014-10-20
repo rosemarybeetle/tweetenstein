@@ -2,8 +2,9 @@
 -----------------------------------------
 Andrew Lewis 2014
 Canvas visualiser script to ingest tweet data and turn it into something else
-v.1 31 Jan 2014 - test
-github
+v.1 31 Jan 2014 - test github
+v.2 20 Oct 2014 - App Engine
+
 */
 
 /* -------------
